@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### DB Credentials and JWT secret key
+application-local.properties
