@@ -2,6 +2,7 @@ package com.ferdin.hiretrack.controller;
 
 import com.ferdin.hiretrack.dto.ApplicationRequestDTO;
 import com.ferdin.hiretrack.dto.ApplicationResponseDTO;
+import com.ferdin.hiretrack.dto.PagedResponseDTO;
 import com.ferdin.hiretrack.dto.StatusUpdateDTO;
 import com.ferdin.hiretrack.service.ApplicationService;
 import jakarta.validation.Valid;
@@ -27,8 +28,10 @@ public class ApplicationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ApplicationResponseDTO>> getAllApplications() {
-        return ResponseEntity.ok(applicationService.getAllApplicationsByUser());
+    public ResponseEntity<PagedResponseDTO<ApplicationResponseDTO>> getAllApplications(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(applicationService.getAllApplicationsByUser(page, size));
     }
 
     @GetMapping("/{id}")

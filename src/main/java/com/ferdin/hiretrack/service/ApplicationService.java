@@ -1,9 +1,6 @@
 package com.ferdin.hiretrack.service;
 
-import com.ferdin.hiretrack.dto.ApplicationRequestDTO;
-import com.ferdin.hiretrack.dto.ApplicationResponseDTO;
-import com.ferdin.hiretrack.dto.ContactRequestDTO;
-import com.ferdin.hiretrack.dto.StatusUpdateDTO;
+import com.ferdin.hiretrack.dto.*;
 import com.ferdin.hiretrack.entity.*;
 import com.ferdin.hiretrack.exception.ResourceNotFoundException;
 import com.ferdin.hiretrack.repository.ApplicationRepository;
@@ -11,6 +8,10 @@ import com.ferdin.hiretrack.repository.CompanyRepository;
 import com.ferdin.hiretrack.repository.UserRepository;
 import com.ferdin.hiretrack.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -74,17 +75,26 @@ public class ApplicationService {
         return toResponseDTO(saved);
     }
 
-    public List<ApplicationResponseDTO> getAllApplicationsByUser() {
-
+    public PagedResponseDTO<ApplicationResponseDTO> getAllApplicationsByUser(int page, int size) {
         Long userId = securityUtils.getCurrentUserId();
 
-        userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
 
-        return applicationRepository.findByUserId(userId)
+        Page<Application> applicationPage = applicationRepository.findByUserId(userId, pageable);
+
+        List<ApplicationResponseDTO> content = applicationPage.getContent()
                 .stream()
                 .map(this::toResponseDTO)
                 .collect(Collectors.toList());
+
+        return new PagedResponseDTO<>(
+                content,
+                applicationPage.getNumber(),
+                applicationPage.getSize(),
+                applicationPage.getTotalElements(),
+                applicationPage.getTotalPages(),
+                applicationPage.isLast()
+        );
     }
 
     public ApplicationResponseDTO getApplicationById(Long id) {
