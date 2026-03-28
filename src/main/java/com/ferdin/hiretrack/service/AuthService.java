@@ -9,11 +9,13 @@ import com.ferdin.hiretrack.exception.ResourceNotFoundException;
 import com.ferdin.hiretrack.repository.UserRepository;
 import com.ferdin.hiretrack.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -24,9 +26,12 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
 
     public AuthResponseDTO register(RegisterRequestDTO requestDTO) {
+        log.info("Received register request for email : {}", requestDTO.getEmail());
         if (userRepository.findByEmail(requestDTO.getEmail()).isPresent()) {
+            log.warn("User already exists for email : {}", requestDTO.getEmail());
             throw new DuplicateResourceException("Email already registered: " + requestDTO.getEmail());
         }
+
 
         User user = new User();
         user.setName(requestDTO.getName());
@@ -37,10 +42,14 @@ public class AuthService {
 
         String token = jwtUtil.generateToken(saved.getEmail(), saved.getId());
 
+        log.info("User registered with email : {}", saved.getEmail());
+
         return new AuthResponseDTO(token, saved.getId(), saved.getEmail());
     }
 
     public AuthResponseDTO login(LoginRequestDTO requestDTO) {
+
+        log.info("Received login request for email : {}", requestDTO.getEmail());
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         requestDTO.getEmail(),

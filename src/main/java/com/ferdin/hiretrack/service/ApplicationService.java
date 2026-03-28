@@ -8,6 +8,7 @@ import com.ferdin.hiretrack.repository.CompanyRepository;
 import com.ferdin.hiretrack.repository.UserRepository;
 import com.ferdin.hiretrack.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ApplicationService {
@@ -33,6 +35,7 @@ public class ApplicationService {
     public ApplicationResponseDTO createApplication(ApplicationRequestDTO requestDTO) {
 
         Long userId = securityUtils.getCurrentUserId();
+        log.info("User {} creating application for company {}", userId, requestDTO.getCompanyId());
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
@@ -72,6 +75,7 @@ public class ApplicationService {
         }
 
         Application saved = applicationRepository.save(application);
+        log.info("Application with id {} has been created for user {}", saved.getId(), userId);
         return toResponseDTO(saved);
     }
 
@@ -100,7 +104,7 @@ public class ApplicationService {
     public ApplicationResponseDTO getApplicationById(Long id) {
 
         Long userId = securityUtils.getCurrentUserId();
-
+        log.info("User {} getting application with id {}", userId, id);
         Application application = applicationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Application not found with id: " + id));
 
@@ -115,7 +119,7 @@ public class ApplicationService {
     public ApplicationResponseDTO updateApplication(Long id, ApplicationRequestDTO requestDTO) {
 
         Long userId = securityUtils.getCurrentUserId();
-
+        log.info("User {} updating application with id {}", userId, id);
         Application application = applicationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Application not found with id: " + id));
 
@@ -134,6 +138,7 @@ public class ApplicationService {
         application.setDescription(requestDTO.getDescription());
 
         Application saved = applicationRepository.save(application);
+        log.debug("Application with id {} has been updated for user {}", saved.getId(), userId);
         return toResponseDTO(saved);
     }
 
@@ -169,6 +174,7 @@ public class ApplicationService {
         }
 
         applicationRepository.delete(application);
+        log.info("Application {} deleted by user {}", id, userId);
     }
 
     private ApplicationResponseDTO toResponseDTO(Application application) {
