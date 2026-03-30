@@ -33,6 +33,9 @@ public class User {
     @NotBlank(message = "Password cannot be blank")
     private String password;
 
+    @Enumerated(EnumType.STRING)
+    private UserRole role = UserRole.USER;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Application> applications = new ArrayList<>();
 }
