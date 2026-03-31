@@ -79,12 +79,18 @@ public class ApplicationService {
         return toResponseDTO(saved);
     }
 
-    public PagedResponseDTO<ApplicationResponseDTO> getAllApplicationsByUser(int page, int size) {
+    public PagedResponseDTO<ApplicationResponseDTO> getAllApplicationsByUser(int page, int size, ApplicationStatus status) {
         Long userId = securityUtils.getCurrentUserId();
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Page<Application> applicationPage;
 
-        Page<Application> applicationPage = applicationRepository.findByUserId(userId, pageable);
+        if(status != null) {
+            applicationPage = applicationRepository.findByUserIdAndStatus(userId, status, pageable);
+        }
+        else{
+            applicationPage = applicationRepository.findByUserId(userId, pageable);
+        }
 
         List<ApplicationResponseDTO> content = applicationPage.getContent()
                 .stream()
