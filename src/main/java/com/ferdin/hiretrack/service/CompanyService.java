@@ -53,6 +53,13 @@ public class CompanyService {
         companyRepository.delete(existing);
     }
 
+    public List<CompanyResponseDTO> searchCompanies(String name) {
+        return companyRepository.findByNameContainingIgnoreCase(name)
+                .stream()
+                .map(this::toResponseDTO)
+                .collect(Collectors.toList());
+    }
+
     private Company findCompanyById(Long id) {
         return companyRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(

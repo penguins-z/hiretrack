@@ -35,6 +35,11 @@ public class CompanyController {
         return ResponseEntity.ok(companyService.getCompanyById(id));
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<CompanyResponseDTO>> getCompanyByName(@RequestParam String name) {
+        return ResponseEntity.ok(companyService.searchCompanies(name));
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<CompanyResponseDTO> updateCompany(
             @PathVariable Long id,
