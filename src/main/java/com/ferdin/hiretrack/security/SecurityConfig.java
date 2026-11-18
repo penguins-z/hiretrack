@@ -37,7 +37,7 @@ public class SecurityConfig {
                                 "/swagger-ui.html",
                                 "/v3/api-docs/**"
                         ).permitAll()
-                        .requestMatchers(HttpMethod.DELETE, "api/companies/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/companies/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/companies/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
@@ -63,8 +63,7 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(userDetailsService);
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService);
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
     }
