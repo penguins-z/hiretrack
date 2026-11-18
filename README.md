@@ -5,7 +5,7 @@ A RESTful API for tracking job applications, built with Spring Boot and secured 
 ## Tech Stack
 
 - Java 21
-- Spring Boot 3.5.11
+- Spring Boot 4.1.2
 - Spring Security + JWT
 - Spring Data JPA + Hibernate
 - PostgreSQL
